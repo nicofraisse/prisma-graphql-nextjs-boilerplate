@@ -1,0 +1,43 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  name      String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+}
+
+model Pattern {
+  id         Int     @id @default(autoincrement())
+  name       String? @unique
+  score      String  @unique
+  instrument String?
+  grooveId   Int?
+  Groove     Groove? @relation(fields: [grooveId], references: [id])
+}
+
+model Groove {
+  id         Int       @id @default(autoincrement())
+  name       String    @unique
+  goalTempo  Int?
+  startTempo Int?
+  patterns   Pattern[]
+  records    Record[]
+}
+
+model Record {
+  id          Int      @id @default(autoincrement())
+  tempo       Int
+  performance Int
+  createdAt   DateTime @default(now()) @map("date")
+  grooveId    Int
+  Groove      Groove   @relation(fields: [grooveId], references: [id])
+}
